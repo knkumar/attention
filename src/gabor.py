@@ -5,7 +5,7 @@ import matplotlib.cm as cm
 # To display the result (colormaps)
 
 
-def make_gabor(values, orientation, sigma=0.8, name=''):     
+def make_gabor(values, orientation, sigma=0.8):     
 
     vals = np.linspace(-np.pi,np.pi,values)
     # vals.shape : (100,)
@@ -24,17 +24,16 @@ def make_gabor(values, orientation, sigma=0.8, name=''):
     the_gabor = the_gaussian * the_sine 
     # Elementwise multiplication of Gaussian and sine wave grating
     #the_gabor = the_gabor / np.min(the_gabor)
-    if __name__ == "__main":
-        if orientation == "horizontal":
-            plt.imshow(np.transpose(the_gabor),cm.Greys, interpolation='nearest', vmin=-500, vmax=300) 
-        else:
-            plt.imshow(the_gabor,cm.Greys, interpolation='nearest', vmin=-500, vmax=300) 
-    
-        # Plot every pixel value, using a gray colormap
-        plt.savefig(name+'.png')
-    else:
+
+    if orientation == "horizontal":
         return the_gabor
+    else:
+        return np.transpose(the_gabor)
 
 if __name__ == "__main__":
-    make_gabor(1000, "../images/gabor_hor", "horizontal", 0.95)
-    make_gabor(1000, "../images/gabor_ver", "vertical", 0.95)
+    the_gabor = make_gabor(1000, "horizontal", 0.95)
+    plt.imshow(the_gabor,cm.Greys, interpolation='nearest', vmin=-500, vmax=300) 
+    plt.savefig("../images/gabor_hor.png")
+    the_gabor = make_gabor(1000, "vertical", 0.95)
+    plt.imshow(the_gabor,cm.Greys, interpolation='nearest', vmin=-500, vmax=300) 
+    plt.savefig("../images/gabor_ver.png")
