@@ -1,10 +1,10 @@
 import Image as im
 import ImageDraw as imdraw
 
-def drawCircle(color, size=100):
-    img = im.new("RGBA",(size,size))
+def drawCircle(img, color):
+    sizex, sizey = img.size
     draw = imdraw.Draw(img)
-    draw.ellipse((0,0,size-1,size-1),outline=color)
+    draw.ellipse((2,2,sizex-2,sizex-2),outline=color)
     return img
 
 if __name__ == "__main__":
