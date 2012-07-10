@@ -10,15 +10,25 @@ import pygame
 import ImageEnhance as Enhance
 import ImageChops as ic
 import ImageDraw
+from drawRectangle import drawRectagle as rectangle
 
 gabor_hor = img.fromarray( gabor(1000,"horizontal",0.7)).convert("RGB")
 gabor_horizontal = Enhance.Contrast(gabor_hor).enhance(5.4).resize((35,35), img.ANTIALIAS) 
 gabor_ver = img.fromarray( gabor(1000,"vertical",0.7)).convert("RGB")
 gabor_vertical = Enhance.Contrast(gabor_ver).enhance(5.4).resize((35,35), img.ANTIALIAS)
-#gabor_horizontal.show()
-#gabor_vertical.show()
 
-
+def createDistract(colors):
+    distractors = {}
+    im_hor = Enhance.Contrast( rectangle(gabor_horizontal,"green") ).enhance(0.8)
+    draw_hor = ImageDraw.Draw(im_hor)
+    im_ver = Enhance.Contrast( rectangle(gabor_vertical,"green") ).enhance(0.8)
+    distractors["square"]  = [convertPIL(im_hor), convertPIL(im_ver)]
+    im_hor = Enhance.Contrast( circle(gabor_horizontal,color) ).enhance(0.8).resize((45,45), img.ANTIALIAS)
+    draw_hor = ImageDraw.Draw(im_hor)
+    im_ver = Enhance.Contrast( circle(gabor_vertical,color) ).enhance(0.8).resize((45,45), img.ANTIALIAS)
+    distractors["size"]  = [convertPIL(im_hor), convertPIL(im_ver)]
+    return distractors
+        
 # overlay the circle with the gabor patch
 def createOverlay(colors):
     images = {}
