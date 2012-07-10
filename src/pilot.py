@@ -10,7 +10,7 @@ import pygame
 import ImageEnhance as Enhance
 import ImageChops as ic
 import ImageDraw
-from drawRectangle import drawRectagle as rectangle
+from drawRectangle import drawRectangle as rectangle
 
 gabor_hor = img.fromarray( gabor(1000,"horizontal",0.7)).convert("RGB")
 gabor_horizontal = Enhance.Contrast(gabor_hor).enhance(5.4).resize((35,35), img.ANTIALIAS) 

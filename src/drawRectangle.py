@@ -1,7 +1,7 @@
 import Image as im
 import ImageDraw as imdraw
 
-def drawCircle(img, color):
+def drawRectangle(img, color):
     sizex, sizey = img.size
     draw = imdraw.Draw(img)
     draw.rectangle((2,2,sizex-2,sizex-2),outline=color)
