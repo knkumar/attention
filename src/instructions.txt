@@ -1,11 +1,25 @@
 Instructions for the test
 
-Please read the instructions carefully. You can scroll down using the arrow keys or space. Once you have read the instruction hit the return (Enter) key to begin the experiment.
+Please read the instructions carefully. You can scroll down using the
+arrow keys or space. Once you have read the instructions hit the return
+(Enter) key to begin the experiment. To move to the next trial hit the "Space" key.
 
-You will be shown a display with 12 objects around a focal point. There is a specific object marked as a target from among these objects. The target is defined as %s, in this case. The scoring metric is how fast you can idenitfy the specific marked object.
+You will be shown a display with 12 objects around a focal
+point. There is a specific object marked as a target from among these
+objects. The target is defined as %s, in this case. The scoring metric
+is how fast you can idenitfy the specific marked object.
 
-The task is to find the orientation of the gabor patch, which is either horizontal or vertical. The gabor patch is a simple image with squiggly lines which are either vertical or horizontal in this case. If you do not understand this, please talk to the experimenter for guidance. The task is meant to be really simple and should be easy to percieve.
+The task is to find the orientation of the gabor patch, which is
+either horizontal or vertical. The gabor patch is a simple image with
+squiggly lines which are either vertical or horizontal in this
+case. If you do not understand this, please talk to the experimenter
+for guidance. The task is meant to be really simple and should be easy
+to percieve.
 
-Once you have identified the target you need to hit "h" for horizontal or "v" for vertical on the keyboard to mark the orientation of the gabor patch. You will given feedback on whether you got it right or wrong. To move to the next trial hit the "Space" key.
+Once you have identified the target you need to hit "h" for horizontal
+or "v" for vertical on the keyboard to mark the orientation of the
+gabor patch. You will given feedback on whether you got it right or
+wrong. To move to the next trial hit the "Space" key.
 
-The experiment will run for half an hour. The scores will be compiled and returned to you at a later point. Best of Luck!
+The experiment will run for half an hour. The scores will be compiled
+and returned to you at a later point. Best of Luck!

@@ -14,114 +14,125 @@ from gabor import make_gabor as gabor
 from Images import Images
 
 
-def userSpace(stim, bc, orientation, mypc, ):
-    ts, b, rt = stim.present(clk=mypc,duration=0,bc=bc)
-    response_time = rt[0]-ts[0]
-    if b==Key("SPACE"):
-        return True
-    return False
+class attentionExperiment:
 
-def drawCanvas(images, video, mypc, posRed, numDist, dist1=None, dist2=None):
-    # reset the display to black
-    video.clear("black")
+    def __init__(self, distOrder):
+        # create an experiment object
+        self.exp = Experiment(resolution=(1024,768))
+        self.video = VideoTrack("video")
+        self.pc = PresentationClock()
+        self.video.clear("black")
+        self.stim = Text("", color="black")
+        self.keyboard = KeyTrack("keyboard")
+        self.bc = ButtonChooser(Key("h"), Key("v"), Key("SPACE"))
+        self.images = Images()
+        self.images.setup()
+        self.generate_sequences(12, len(distOrder))
 
-    """pos = [[0.35,0.45], [0.35,0.55] , [0.41,0.4] , [0.41,0.6] , [0.47,0.35] , [0.47,0.65] ,
-           [0.54,0.65], [0.54,0.35] , [0.61,0.6] , [0.61,0.4] , [0.67,0.55] , [0.67,0.45]]"""
 
+    def userSpace(self):
+        ts, b, rt = self.stim.present(clk=self.pc,duration=0,bc=self.bc)
+        response_time = rt[0]-ts[0]
+        if b==Key("SPACE"):
+            return True
+        return False
 
-    pos = [[0.8,0.5], [0.76,0.65] , [0.65,0.76] , [0.5,0.8] , [0.35,0.76] , [0.24,0.65] ,
-          [0.2,0.5], [0.24,0.35] , [0.35,0.24] , [0.5,0.2] , [0.65,0.24] , [0.76,0.35]]
-   
-    gabor_switch = [0]*6+[1]*6
-    random.shuffle(gabor_switch)
-
-    ret = []
-    for i,item in enumerate(pos):
-        if i == posRed:
-            video.showProportional(Image( images.images["red"][gabor_switch[i]]) , item[0], item[1])
-            ret.append("h" if gabor_switch[i] else "v")
-            
-        elif dist1 and i == dist1:
-            video.showProportional(Image( images.distractors["square"][gabor_switch[i]]) , item[0], item[1])
-            ret.append("h" if gabor_switch[i] else "v")
-            
-        elif dist2 and i == dist2:
-            video.showProportional(Image( images.distractors["size"][gabor_switch[i]]) , item[0], item[1])
-            ret.append("h" if gabor_switch[i] else "v")
-            
+    def userInput(self, orientation=None ):
+        ts, b, rt = self.stim.present(clk=self.pc,duration=0,bc=self.bc)
+        response_time = rt[0]-ts[0]
+        if b==Key(orientation):
+            self.video.showCentered(Text("Correct.\nPress space for next"))    
+            result = True #correct
         else:
-            video.showProportional(Image( images.images["green"][gabor_switch[i]]) , item[0], item[1])
+            self.video.showCentered(Text("Incorrect.\nPress space for next"))    
+            result = False
+        
+        return result, response_time
 
-    video.updateScreen()
+
+    """
+    Draw the canvas for the trial
+    @input: 
+    images dictionary - contains the images, 
+    video - the video track to write, 
+    pc - the presentation clock
+    posRed - the position of the red circle
+    numDist - the number of distractors
+    dist1 - the first distractor position, if no distractor then None
+    dist2 - the second distractor position, if no distractor then None
+    @output: 
+    A tuple containing the gabor patch orientation for the target and distractor
+    """
+    def drawCanvas(self, posRed, dist1=None, dist2=None):
+        # reset the display to black
+        self.video.clear("black")
+        
+        pos = [[0.8,0.5], [0.76,0.65] , [0.65,0.76] , [0.5,0.8] , [0.35,0.76] , [0.24,0.65] ,
+               [0.2,0.5], [0.24,0.35] , [0.35,0.24] , [0.5,0.2] , [0.65,0.24] , [0.76,0.35]]
+   
+        gabor_switch = [0]*6+[1]*6 #determine whether to keep it horizontal or vertical for the 12 cases
+        random.shuffle(gabor_switch)
+        ret = {}
+
+        for i,location in enumerate(pos):
+            if i == posRed:
+                self.video.showProportional( Image(self.images.images["red"][gabor_switch[i]]) , location[0], location[1])
+                ret["red"] = "h" if gabor_switch[i] else "v"
+            elif dist1 and i == dist1:
+                self.video.showProportional(Image( self.images.images["square"][gabor_switch[i]]) , location[0], location[1])
+                ret["square"] = "h" if gabor_switch[i] else "v"
+            elif dist2 and i == dist2:
+                self.video.showProportional(Image( self.images.images["size"][gabor_switch[i]]) , location[0], location[1])
+                ret["size"] = "h" if gabor_switch[i] else "v"
+            else:
+                self.video.showProportional(Image( self.images.images["green"][gabor_switch[i]]) , location[0], location[1])
+
+        self.video.updateScreen()       
+        return ret
+
+    def randomize(self, sequence):
+        random.seed()
+        random.shuffle(sequence)
+        return sequence
+
+
+    def generate_sequences(self,num, distLength):
+        random.seed()
+        sequence = [val%num for val in  random.sample(range(distLength), distLength) ]
+        dist1_sequence = [val%num for val in  random.sample(range(distLength), distLength) ]
+        dist2_sequence = [val%num for val in  random.sample(range(distLength), distLength) ]
+        self.sequence = self.randomize(sequence)
+        self.dist1_sequence = self.randomize(dist1_sequence)
+        self.dist2_sequence = self.randomize(dist2_sequence)
+
+    def run(self,distOrder, target, distractors):
+ 
+
+        instruct1 = open("instructions.txt","r").read()
+        instruct(instruct1,size=0.03, clk=self.pc)
+
+        #self.pc.delay(10000)
+        trials = {}
+
+        for i in range(len(distOrder)):
+
+            if distOrder[i] == 0:
+                #target only
+                retOrient = self.drawCanvas(self.sequence[i])
+            if distOrder[i] == 1:
+                #target + first distractor
+                retOrient = self.drawCanvas(self.sequence[i], self.dist1_sequence[i]) 
+            if distOrder[i] == 2:
+                #target + second distractor
+                retOrient = self.drawCanvas(self.sequence[i], None, self.dist1_sequence[i]) 
+            if distOrder[i] == 3:
+                #target + both distractor
+                retOrient = self.drawCanvas(self.sequence[i], self.dist1_sequence[i], self.dist2_sequence[i])
+
+            result,response_time = self.userInput(retOrient["red"].lower())
+            trials[i] = [result, response_time]
+            self.userSpace()
     
-    #mypc.delay(1000) 
-    # make sure we've finished displaying
-    #mypc.wait() 
-    
-    #0-h, 1-v
-    
-    return ret
-
-
-def userInput(stim, bc, mypc, orientation=None ):
-    ts, b, rt = stim.present(clk=mypc,duration=0,bc=bc)
-    response_time = rt[0]-ts[0]
-    if b==Key(orientation):
-        result = "Correct.\nPress space for next"
-    else:
-        result = "Incorrect.\nPress space for next"
-    flashStimulus(Text(result), clk=mypc)
-    
-    return result,response_time
-
-def experiment(distOrder):
-    # create an experiment object
-    exp = Experiment(resolution=(1024,768))
-    # create a VideoTrack object for interfacing with monitor
-    video = VideoTrack("video")
-    # create a PresentationClock
-    mypc = PresentationClock()
-    video.clear("black")
-    stim = Text("", color="black")
-    keyboard = KeyTrack("keyboard")
-    bc = ButtonChooser(Key("h"), Key("v"), Key("SPACE"))
-
-
-    instruct1 = open("instructions.txt","r").read()
-    instruct(instruct1,size=0.03, clk=mypc)
-
-    mypc.delay(1000)
-    images = Images()
-    images.setup()
-    random.seed()
-    sequence = [val%12 for val in  random.sample(range(len(distOrder)), len(distOrder)) ]
-    random.seed()
-    dist1_sequence = [val%12 for val in  random.sample(range(len(distOrder)), len(distOrder)) ]
-    random.seed()
-    dist2_sequence = [val%12 for val in  random.sample(range(len(distOrder)), len(distOrder)) ]
-    random.seed()
-    random.shuffle(sequence)
-    random.seed()
-    random.shuffle(dist1_sequence)
-    random.seed()
-    random.shuffle(dist2_sequence)
-    
-    
-    for i in range(len(distOrder)):
-
-        if distOrder[i] == 0:
-            retOrient = drawCanvas(images,video,mypc, sequence[i], distOrder[i])
-        if distOrder[i] == 1:
-            retOrient = drawCanvas(images,video,mypc, sequence[i], distOrder[i], dist1_sequence[i])
-        if distOrder[i] == 2:
-            retOrient = drawCanvas(images,video,mypc, sequence[i], distOrder[i],None, dist1_sequence[i])
-        if distOrder[i] == 3:
-            retOrient = drawCanvas(images,video,mypc, sequence[i], distOrder[i],dist1_sequence[i], dist2_sequence[i])
-
-        result,response_time = userInput(stim, bc, mypc, retOrient[0].lower())
-        # busy wait not sure if i need this
-        while not userSpace(stim, bc, None, mypc):
-            continue
         
     
 if __name__ == "__main__":
@@ -129,6 +140,9 @@ if __name__ == "__main__":
     dist = [1]*1 + [2]*1 + [3]*3
     random.seed()
     random.shuffle(dist)
+    target = "red"
+    distractors = ("square","size")
     distOrder = [0]*1 + dist
     print distOrder
-    experiment(distOrder)
+    attexp = attentionExperiment(distOrder)
+    attexp.run(distOrder, target, distractors)
