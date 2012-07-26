@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-from drawCircle import drawCircle as circle
-from gabor import make_gabor as gabor
 # get access to pyepl objects & functions
 from pyepl.locals import *
 import random
@@ -11,60 +9,29 @@ import ImageEnhance as Enhance
 import ImageChops as ic
 import ImageDraw
 from drawRectangle import drawRectangle as rectangle
+from drawCircle import drawCircle as circle
+from gabor import make_gabor as gabor
+from Images import Images
 
 
-class Images:
-    def __init__(self):
-        self.createGabor()
-        self.distractors = {}
-        self.images = {}
+def userSpace(stim, bc, orientation, mypc, ):
+    ts, b, rt = stim.present(clk=mypc,duration=0,bc=bc)
+    response_time = rt[0]-ts[0]
+    if b==Key("SPACE"):
+        return True
+    return False
 
-    def createGabor(self):
-        gabor_hor = img.fromarray( gabor(1000,"horizontal",0.7)).convert("RGB")
-        self.gabor_horizontal = Enhance.Contrast(gabor_hor).enhance(5.4).resize((35,35), img.ANTIALIAS) 
-        gabor_ver = img.fromarray( gabor(1000,"vertical",0.7)).convert("RGB")
-        self.gabor_vertical = Enhance.Contrast(gabor_ver).enhance(5.4).resize((35,35), img.ANTIALIAS)
-
-        
-    def convertPIL(self,im):
-        mode = im.mode
-        size = im.size
-        data = im.tostring()
-        return pygame.image.frombuffer(data,size,mode)
-
-
-    def createDistract(self):
-        self.createGabor()
-        im_hor = Enhance.Contrast( rectangle(self.gabor_horizontal,"green") ).enhance(0.8)
-        im_ver = Enhance.Contrast( rectangle(self.gabor_vertical,"green") ).enhance(0.8)
-        self.distractors["square"]  = [self.convertPIL(im_hor), self.convertPIL(im_ver)]
-
-        self.createGabor()
-        im_hors = Enhance.Contrast( circle(self.gabor_horizontal,"green") ).enhance(0.8).resize((45,45), img.ANTIALIAS)
-        im_vers = Enhance.Contrast( circle(self.gabor_vertical,"green") ).enhance(0.8).resize((45,45), img.ANTIALIAS)
-        self.distractors["size"]  = [self.convertPIL(im_hors), self.convertPIL(im_vers)]
-        
-# overlay the circle with the gabor patch
-    def createOverlay(self,colors):
-        for color in colors:
-            self.createGabor()
-            img_hor = Enhance.Contrast( circle(self.gabor_horizontal,color) ).enhance(0.8)
-            img_ver = Enhance.Contrast( circle(self.gabor_vertical,color) ).enhance(0.8)
-            self.images[color]  = [self.convertPIL(img_hor), self.convertPIL(img_ver)]
-
-    def setup(self):
-        self.createOverlay(("red","green"))
-        self.createDistract()
-
-
-        
-
-def drawCircles(images, video, mypc, posRed, numDist, dist1=None, dist2=None):
+def drawCanvas(images, video, mypc, posRed, numDist, dist1=None, dist2=None):
     # reset the display to black
     video.clear("black")
-    pos = [[0.35,0.45], [0.35,0.55] , [0.41,0.4] , [0.41,0.6] , [0.47,0.35] , [0.47,0.65] ,
-           [0.54,0.65], [0.54,0.35] , [0.61,0.6] , [0.61,0.4] , [0.67,0.55] , [0.67,0.45]]
 
+    """pos = [[0.35,0.45], [0.35,0.55] , [0.41,0.4] , [0.41,0.6] , [0.47,0.35] , [0.47,0.65] ,
+           [0.54,0.65], [0.54,0.35] , [0.61,0.6] , [0.61,0.4] , [0.67,0.55] , [0.67,0.45]]"""
+
+
+    pos = [[0.8,0.5], [0.76,0.65] , [0.65,0.76] , [0.5,0.8] , [0.35,0.76] , [0.24,0.65] ,
+          [0.2,0.5], [0.24,0.35] , [0.35,0.24] , [0.5,0.2] , [0.65,0.24] , [0.76,0.35]]
+   
     gabor_switch = [0]*6+[1]*6
     random.shuffle(gabor_switch)
 
@@ -96,25 +63,34 @@ def drawCircles(images, video, mypc, posRed, numDist, dist1=None, dist2=None):
     return ret
 
 
-def userInput(stim, bc, orientation, mypc, ):
+def userInput(stim, bc, mypc, orientation=None ):
     ts, b, rt = stim.present(clk=mypc,duration=0,bc=bc)
     response_time = rt[0]-ts[0]
     if b==Key(orientation):
-        result = "Correct!"
+        result = "Correct.\nPress space for next"
     else:
-        result = "Incorrect!"
+        result = "Incorrect.\nPress space for next"
     flashStimulus(Text(result), clk=mypc)
     
     return result,response_time
 
 def experiment(distOrder):
     # create an experiment object
-    exp = Experiment()
+    exp = Experiment(resolution=(1024,768))
     # create a VideoTrack object for interfacing with monitor
     video = VideoTrack("video")
     # create a PresentationClock
     mypc = PresentationClock()
+    video.clear("black")
+    stim = Text("", color="black")
+    keyboard = KeyTrack("keyboard")
+    bc = ButtonChooser(Key("h"), Key("v"), Key("SPACE"))
 
+
+    instruct1 = open("instructions.txt","r").read()
+    instruct(instruct1,size=0.03, clk=mypc)
+
+    mypc.delay(1000)
     images = Images()
     images.setup()
     random.seed()
@@ -130,31 +106,29 @@ def experiment(distOrder):
     random.seed()
     random.shuffle(dist2_sequence)
     
-    stim = Text("", color="black")
-    keyboard = KeyTrack("keyboard")
-    bc = ButtonChooser(Key("h"), Key("v"))
-    #orientation='H'
-
+    
     for i in range(len(distOrder)):
 
         if distOrder[i] == 0:
-            retOrient = drawCircles(images,video,mypc, sequence[i], distOrder[i])
+            retOrient = drawCanvas(images,video,mypc, sequence[i], distOrder[i])
         if distOrder[i] == 1:
-            retOrient = drawCircles(images,video,mypc, sequence[i], distOrder[i], dist1_sequence[i])
+            retOrient = drawCanvas(images,video,mypc, sequence[i], distOrder[i], dist1_sequence[i])
         if distOrder[i] == 2:
-            retOrient = drawCircles(images,video,mypc, sequence[i], distOrder[i],None, dist1_sequence[i])
+            retOrient = drawCanvas(images,video,mypc, sequence[i], distOrder[i],None, dist1_sequence[i])
         if distOrder[i] == 3:
-            retOrient = drawCircles(images,video,mypc, sequence[i], distOrder[i],dist1_sequence[i], dist2_sequence[i])
+            retOrient = drawCanvas(images,video,mypc, sequence[i], distOrder[i],dist1_sequence[i], dist2_sequence[i])
 
-        result,response_time = userInput(stim,bc,retOrient[0].lower(),mypc)
-        
+        result,response_time = userInput(stim, bc, mypc, retOrient[0].lower())
+        # busy wait not sure if i need this
+        while not userSpace(stim, bc, None, mypc):
+            continue
         
     
 if __name__ == "__main__":
     # the order is 10 control then interspersed 20 single distractor and 30 double distractor
-    dist = [1]*10 + [2]*10 + [3]*30
+    dist = [1]*1 + [2]*1 + [3]*3
     random.seed()
     random.shuffle(dist)
-    distOrder = [0]*10 + dist
+    distOrder = [0]*1 + dist
     print distOrder
     experiment(distOrder)
