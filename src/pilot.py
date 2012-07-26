@@ -75,14 +75,14 @@ class attentionExperiment:
         ret = {}
 
         for i,location in enumerate(pos):
-            if i == posRed:
-                self.video.showProportional( Image(self.images.images["red"][gabor_switch[i]]) , location[0], location[1])
+            if i == posRed[1]:
+                self.video.showProportional( Image(self.images.images[posRed[0]][gabor_switch[i]]) , location[0], location[1])
                 ret["red"] = "h" if gabor_switch[i] else "v"
-            elif dist1 and i == dist1:
-                self.video.showProportional(Image( self.images.images["square"][gabor_switch[i]]) , location[0], location[1])
+            elif dist1 and i == dist1[1]:
+                self.video.showProportional(Image( self.images.images[dist1[0]][gabor_switch[i]]) , location[0], location[1])
                 ret["square"] = "h" if gabor_switch[i] else "v"
-            elif dist2 and i == dist2:
-                self.video.showProportional(Image( self.images.images["size"][gabor_switch[i]]) , location[0], location[1])
+            elif dist2 and i == dist2[1]:
+                self.video.showProportional(Image( self.images.images[dist2[0]][gabor_switch[i]]) , location[0], location[1])
                 ret["size"] = "h" if gabor_switch[i] else "v"
             else:
                 self.video.showProportional(Image( self.images.images["green"][gabor_switch[i]]) , location[0], location[1])
@@ -118,16 +118,16 @@ class attentionExperiment:
 
             if distOrder[i] == 0:
                 #target only
-                retOrient = self.drawCanvas(self.sequence[i])
+                retOrient = self.drawCanvas((target,self.sequence[i]))
             if distOrder[i] == 1:
                 #target + first distractor
-                retOrient = self.drawCanvas(self.sequence[i], self.dist1_sequence[i]) 
+                retOrient = self.drawCanvas((target,self.sequence[i]), (distractors[0],self.dist1_sequence[i]) )
             if distOrder[i] == 2:
                 #target + second distractor
-                retOrient = self.drawCanvas(self.sequence[i], None, self.dist1_sequence[i]) 
+                retOrient = self.drawCanvas((target,self.sequence[i]), None, (distractors[1],self.dist1_sequence[i]) )
             if distOrder[i] == 3:
                 #target + both distractor
-                retOrient = self.drawCanvas(self.sequence[i], self.dist1_sequence[i], self.dist2_sequence[i])
+                retOrient = self.drawCanvas((target,self.sequence[i]), (distractors[0],self.dist1_sequence[i]), (distractors[1],self.dist2_sequence[i]) )
 
             result,response_time = self.userInput(retOrient["red"].lower())
             trials[i] = [result, response_time]
