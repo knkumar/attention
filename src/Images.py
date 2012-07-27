@@ -33,21 +33,21 @@ class Images:
 
     def createDistract(self):
         self.createGabor()
-        im_hor = Enhance.Contrast( rectangle(self.gabor_horizontal,"green") ).enhance(1.8)
-        im_ver = Enhance.Contrast( rectangle(self.gabor_vertical,"green") ).enhance(1.8)
+        im_hor = Enhance.Contrast( rectangle(self.gabor_horizontal,"green") ).enhance(1.2)
+        im_ver = Enhance.Contrast( rectangle(self.gabor_vertical,"green") ).enhance(1.2)
         self.images["square"]  = [self.convertPIL(im_hor), self.convertPIL(im_ver)]
 
         self.createGabor((100,100))
-        im_hors = Enhance.Contrast( circle(self.gabor_horizontal,"green") ).enhance(1.8).resize((100,100), img.ANTIALIAS)
-        im_vers = Enhance.Contrast( circle(self.gabor_vertical,"green") ).enhance(1.8).resize((100,100), img.ANTIALIAS)
+        im_hors = Enhance.Contrast( circle(self.gabor_horizontal,"green") ).enhance(1.2).resize((100,100), img.ANTIALIAS)
+        im_vers = Enhance.Contrast( circle(self.gabor_vertical,"green") ).enhance(1.2).resize((100,100), img.ANTIALIAS)
         self.images["size"]  = [self.convertPIL(im_hors), self.convertPIL(im_vers)]
         
 # overlay the circle with the gabor patch
     def createOverlay(self,colors):
         for color in colors:
             self.createGabor()
-            img_hor = Enhance.Contrast( circle(self.gabor_horizontal,color) ).enhance(0.5)
-            img_ver = Enhance.Contrast( circle(self.gabor_vertical,color) ).enhance(0.5)
+            img_hor = Enhance.Contrast( circle(self.gabor_horizontal,color) ).enhance(0.7)
+            img_ver = Enhance.Contrast( circle(self.gabor_vertical,color) ).enhance(0.7)
             self.images[color]  = [self.convertPIL(img_hor), self.convertPIL(img_ver)]
 
     def setup(self):

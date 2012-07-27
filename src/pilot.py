@@ -12,6 +12,9 @@ from drawRectangle import drawRectangle as rectangle
 from drawCircle import drawCircle as circle
 from gabor import make_gabor as gabor
 from Images import Images
+import pyaudio
+import wave
+import sys
 
 
 class attentionExperiment:
@@ -30,6 +33,28 @@ class attentionExperiment:
         self.generate_sequences(12, len(distOrder))
 
 
+    def __del__(self):
+        pass
+
+    def play_buzzer(self):
+        # open stream
+        chunk = 1024
+        wf = wave.open("buzzer.wav",'rb')
+        p = pyaudio.PyAudio()
+        stream = p.open(format =
+                                  p.get_format_from_width(wf.getsampwidth()),
+                                  channels = wf.getnchannels(),
+                                  rate = wf.getframerate(),
+                                  output = True)
+
+        data = wf.readframes(chunk)
+        while data != '':
+            stream.write(data)
+            data = wf.readframes(chunk)
+        stream.close()
+        p.terminate()
+
+
     def userSpace(self):
         ts, b, rt = self.stim.present(clk=self.pc,duration=0,bc=self.bc)
         response_time = rt[0]-ts[0]
@@ -45,6 +70,7 @@ class attentionExperiment:
             result = True #correct
         else:
             self.video.showCentered(Text("Incorrect.\nPress space for next"))    
+            self.play_buzzer()
             result = False
         
         return result, response_time
@@ -107,10 +133,9 @@ class attentionExperiment:
 
     def run(self,distOrder, target, distractors):
  
-
+        
         instruct1 = open("instructions.txt","r").read()
         instruct(instruct1,size=0.03, clk=self.pc)
-
         #self.pc.delay(10000)
         trials = {}
 
