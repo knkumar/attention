@@ -1,25 +1,47 @@
 Instructions for the test
 
-Please read the instructions carefully. You can scroll down using the
-arrow keys or space. Once you have read the instructions hit the return
-(Enter) key to begin the experiment. To move to the next trial hit the "Space" key.
+Please read these instructions carefully--you can scroll down using
+the arrow keys or space. Once you have read the instructions hit the
+return (Enter) key to begin the experiment. Each trial begins when you
+hit the "Space" key. If you need to rest during the session, just rest
+before hitting the "Space" key.
 
-You will be shown a display with 12 objects around a focal
-point. There is a specific object marked as a target from among these
-objects. The target is defined as %s, in this case. The scoring metric
-is how fast you can idenitfy the specific marked object.
+Each trial will start with a point shown at the center of screen,
+please focus your eyes on that point. Shortly after the point appears,
+you will be shown a display with 12 objects roughly in clock positions
+around a circle.  These objects will mostly be green circles of a
+certain size.
 
-The task is to find the orientation of the gabor patch, which is
-either horizontal or vertical. The gabor patch is a simple image with
-squiggly lines which are either vertical or horizontal in this
-case. If you do not understand this, please talk to the experimenter
-for guidance. The task is meant to be really simple and should be easy
-to percieve.
+For a given session you will be told to look for one object that
+differs from the others. For example, you might be told for that
+session to find the object that is square instead of circular. In
+another session you might be told to find the red circle instead of
+green. In another session you might be told to find the larger circle
+among smaller circles.
 
-Once you have identified the target you need to hit "h" for horizontal
-or "v" for vertical on the keyboard to mark the orientation of the
-gabor patch. You will given feedback on whether you got it right or
-wrong. To move to the next trial hit the "Space" key.
+Your task is to look inside the designated object and find the lines
+that go either horizontally or vertically. If the lines go vertically,
+press the "v" key. If the lines go horizontally press the "h" key. You
+are supposed to respond as fast and accurately as possible. If you
+make a mistake about the orientation you will hear a 'buzzer' warning
+you that you made an error. At the end of the session you will be told
+how well you did overall.
 
-The experiment will run for half an hour. The scores will be compiled
-and returned to you at a later point. Best of Luck!
+It is important that you look for the object that is designated for
+that session, ignoring all other objects that might also appear on
+some trials. Thus if you are in a session looking for the square
+object, ignore another object that might be red, or larger, if any
+such object or objects appear. In other words, try not to be
+distracted. The designated target (square, large, or red) will change
+each of the three sessions.
+
+If you do not understand this, or have any questions whatever, please
+talk to the experimenter for guidance. The task should be easy to
+carry out.
+
+The experiment will run for 55 minutes in a session. If you do not
+complete a minimum number of trials in that time you will be asked to
+continue until that minimum is reached, but there should be ample time
+to finish in 55 minutes.
+
+On this session, you will be looking for the %s.

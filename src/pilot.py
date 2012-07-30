@@ -31,7 +31,7 @@ class attentionExperiment:
         self.images = Images()
         self.images.setup()
         self.generate_sequences(12, len(distOrder))
-
+        self.log = LogTrack("session")
 
     def __del__(self):
         pass
@@ -103,13 +103,13 @@ class attentionExperiment:
         for i,location in enumerate(pos):
             if i == posRed[1]:
                 self.video.showProportional( Image(self.images.images[posRed[0]][gabor_switch[i]]) , location[0], location[1])
-                ret["red"] = "h" if gabor_switch[i] else "v"
+                ret["red"] = ("h" if gabor_switch[i] else "v", i)
             elif dist1 and i == dist1[1]:
                 self.video.showProportional(Image( self.images.images[dist1[0]][gabor_switch[i]]) , location[0], location[1])
-                ret["square"] = "h" if gabor_switch[i] else "v"
+                ret["square"] = ("h" if gabor_switch[i] else "v", i)
             elif dist2 and i == dist2[1]:
                 self.video.showProportional(Image( self.images.images[dist2[0]][gabor_switch[i]]) , location[0], location[1])
-                ret["size"] = "h" if gabor_switch[i] else "v"
+                ret["size"] = ("h" if gabor_switch[i] else "v", i)
             else:
                 self.video.showProportional(Image( self.images.images["green"][gabor_switch[i]]) , location[0], location[1])
 
@@ -131,16 +131,36 @@ class attentionExperiment:
         self.dist1_sequence = self.randomize(dist1_sequence)
         self.dist2_sequence = self.randomize(dist2_sequence)
 
+    def instruct_text(self, target):
+        if target == "red":
+            return "red circle"
+        elif target == "square":
+            return "green_square"
+        elif target == "size":
+            return "large green circle"
+
+    def create_log(self, trials):
+        self.log.logMessage("Trial# \t result \t response_time \t target"+ 
+                            "\t red orient|red position \t size orient|size position \t square orient|square position")
+        for k,v in trials.items():
+            trial = "%s"%k
+            result = "correct" if v[0] else "Incorrect"
+            response_time = "%s"%v[1]
+            target = "%s"%v[2]
+            pos = ""
+            for key,value in v[3].items():
+                pos = pos+"%s=%s|%s"%(key,value[0],value[1])+","
+            self.log.logMessage("%s,%s,%s,%s,%s"%(trial,result,response_time,target,pos))
+
     def run(self,distOrder, target, distractors):
- 
-        
-        instruct1 = open("instructions.txt","r").read()
-        instruct(instruct1,size=0.03, clk=self.pc)
+
+        self.log.logMessage("Session Start")
+        instruct1 = open("instructions.txt","r").read()    
+        instruct(instruct1%self.instruct_text(target),size=0.03, clk=self.pc)
         #self.pc.delay(10000)
         trials = {}
 
         for i in range(len(distOrder)):
-
             if distOrder[i] == 0:
                 #target only
                 retOrient = self.drawCanvas((target,self.sequence[i]))
@@ -154,10 +174,13 @@ class attentionExperiment:
                 #target + both distractor
                 retOrient = self.drawCanvas((target,self.sequence[i]), (distractors[0],self.dist1_sequence[i]), (distractors[1],self.dist2_sequence[i]) )
 
-            result,response_time = self.userInput(retOrient["red"].lower())
-            trials[i] = [result, response_time]
+            result,response_time = self.userInput(retOrient[target][0].lower())
+            trials[i] = [result, response_time, target, retOrient]
+            
             self.userSpace()
-    
+        print trials
+        self.create_log(trials)
+        self.log.logMessage("Session end")
         
     
 if __name__ == "__main__":
