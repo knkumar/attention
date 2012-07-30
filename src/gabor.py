@@ -1,7 +1,7 @@
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 # To display the result (plot functions)
-import matplotlib.cm as cm
+#import matplotlib.cm as cm
 # To display the result (colormaps)
 
 

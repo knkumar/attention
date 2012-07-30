@@ -12,8 +12,8 @@ from drawRectangle import drawRectangle as rectangle
 from drawCircle import drawCircle as circle
 from gabor import make_gabor as gabor
 from Images import Images
-import pyaudio
-import wave
+#import wave
+#import pyaudio
 import sys
 
 
@@ -36,7 +36,7 @@ class attentionExperiment:
     def __del__(self):
         pass
 
-    def play_buzzer(self):
+    """def play_buzzer(self):
         # open stream
         chunk = 1024
         wf = wave.open("buzzer.wav",'rb')
@@ -53,7 +53,7 @@ class attentionExperiment:
             data = wf.readframes(chunk)
         stream.close()
         p.terminate()
-
+    """
 
     def userSpace(self):
         ts, b, rt = self.stim.present(clk=self.pc,duration=0,bc=self.bc)
@@ -70,7 +70,7 @@ class attentionExperiment:
             result = True #correct
         else:
             self.video.showCentered(Text("Incorrect.\nPress space for next"))    
-            self.play_buzzer()
+            #self.play_buzzer()
             result = False
         
         return result, response_time
@@ -92,7 +92,9 @@ class attentionExperiment:
     def drawCanvas(self, posRed, dist1=None, dist2=None):
         # reset the display to black
         self.video.clear("black")
-        
+        self.video.showCentered(Text("+",size=0.2))
+        flashStimulus(Text("+",size=0.2), 1000, clk=self.pc)
+        self.video.clear("black")
         pos = [[0.8,0.5], [0.76,0.65] , [0.65,0.76] , [0.5,0.8] , [0.35,0.76] , [0.24,0.65] ,
                [0.2,0.5], [0.24,0.35] , [0.35,0.24] , [0.5,0.2] , [0.65,0.24] , [0.76,0.35]]
    
