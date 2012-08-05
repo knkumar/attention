@@ -80,22 +80,23 @@ class attentionExperiment:
 
 
     def baitAndSwitch(self, target, dist_1, dist_2):
+        random.seed()
         if not dist_1 and not dist_2:
             return target, dist_1, dist_2
+
         if dist_1:
             dist1 = dist_1[1]
             if target[1] == dist1:
-                dist_1[1] = dist1 + random.sample(6,1)
+                dist_1[1] = (dist1 + random.sample(range(11),1)[0] ) % 12
+
         if dist_2:
             dist2 = dist_2[1]
             if target[1] == dist2:
-                dist_2[1] = dist2 + random.sample(6,1)
-            if dist1 == dist2:
-                dist_2[1] = dist2 + random.sample(6,1) 
-        if target[1] == dist1[1] or target[1] == dist2[1] or dist1[1] == dist2[1]:
-            return baitAndSwitch(target, dist_1, dist_2)
+                dist_2[1] = (dist2 + random.sample(range(11),1)[0] ) % 12
+            if dist_1 and dist1 == dist2:
+                dist_2[1] = (dist2 + random.sample(range(11),1)[0] ) % 12
 
-        return target, dist1, dist2
+        return target, dist_1, dist_2
 
     """
     Draw the canvas for the trial
@@ -188,16 +189,16 @@ class attentionExperiment:
         for i in range(len(distOrder)):
             if distOrder[i] == 0:
                 #target only
-                retOrient = self.drawCanvas((target,self.sequence[i]))
+                retOrient = self.drawCanvas([target,self.sequence[i]])
             if distOrder[i] == 1:
                 #target + first distractor
-                retOrient = self.drawCanvas((target,self.sequence[i]), (distractors[0],self.dist1_sequence[i]) )
+                retOrient = self.drawCanvas([target,self.sequence[i]], [distractors[0],self.dist1_sequence[i]] )
             if distOrder[i] == 2:
                 #target + second distractor
-                retOrient = self.drawCanvas((target,self.sequence[i]), None, (distractors[1],self.dist1_sequence[i]) )
+                retOrient = self.drawCanvas([target,self.sequence[i]], None, [distractors[1],self.dist1_sequence[i]] )
             if distOrder[i] == 3:
                 #target + both distractor
-                retOrient = self.drawCanvas((target,self.sequence[i]), (distractors[0],self.dist1_sequence[i]), (distractors[1],self.dist2_sequence[i]) )
+                retOrient = self.drawCanvas([target,self.sequence[i]], [distractors[0],self.dist1_sequence[i]], [distractors[1],self.dist2_sequence[i]] )
 
             result,response_time = self.userInput(retOrient[target][0].lower())
             trials[i] = [result, response_time, target, retOrient]
@@ -211,12 +212,12 @@ class attentionExperiment:
     
 if __name__ == "__main__":
     # the order is 10 control then interspersed 20 single distractor and 30 double distractor
-    dist = [1]*300 + [2]*300 + [3]*500
+    dist = [1]*3 + [2]*3 + [3]*5
     random.seed()
     random.shuffle(dist)
     target = "red"
     distractors = ("square","size")
-    distOrder = [0]*20 + dist
+    distOrder = [0]*2 + dist
     print distOrder
     attexp = attentionExperiment(distOrder)
     attexp.run(distOrder, target, distractors)
