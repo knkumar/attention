@@ -60,6 +60,8 @@ class attentionExperiment:
         response_time = rt[0]-ts[0]
         if b==Key("SPACE"):
             return True
+        elif b==key("q"):
+            return "quit"
         return False
 
     def userInput(self, orientation=None ):
@@ -76,6 +78,25 @@ class attentionExperiment:
         return result, response_time
 
 
+
+    def baitAndSwitch(self, target, dist_1, dist_2):
+        if not dist_1 and not dist_2:
+            return target, dist_1, dist_2
+        if dist_1:
+            dist1 = dist_1[1]
+            if target[1] == dist1:
+                dist_1[1] = dist1 + random.sample(6,1)
+        if dist_2:
+            dist2 = dist_2[1]
+            if target[1] == dist2:
+                dist_2[1] = dist2 + random.sample(6,1)
+            if dist1 == dist2:
+                dist_2[1] = dist2 + random.sample(6,1) 
+        if target[1] == dist1[1] or target[1] == dist2[1] or dist1[1] == dist2[1]:
+            return baitAndSwitch(target, dist_1, dist_2)
+
+        return target, dist1, dist2
+
     """
     Draw the canvas for the trial
     @input: 
@@ -89,7 +110,7 @@ class attentionExperiment:
     @output: 
     A tuple containing the gabor patch orientation for the target and distractor
     """
-    def drawCanvas(self, posRed, dist1=None, dist2=None):
+    def drawCanvas(self, target, dist1=None, dist2=None):
         # reset the display to black
         self.video.clear("black")
         self.video.showCentered(Text("+",size=0.2))
@@ -102,9 +123,11 @@ class attentionExperiment:
         random.shuffle(gabor_switch)
         ret = {}
 
+        target, dist1, dist2 = self.baitAndSwitch(target, dist1, dist2)
+
         for i,location in enumerate(pos):
-            if i == posRed[1]:
-                self.video.showProportional( Image(self.images.images[posRed[0]][gabor_switch[i]]) , location[0], location[1])
+            if i == target[1]:
+                self.video.showProportional( Image(self.images.images[target[0]][gabor_switch[i]]) , location[0], location[1])
                 ret["red"] = ("h" if gabor_switch[i] else "v", i)
             elif dist1 and i == dist1[1]:
                 self.video.showProportional(Image( self.images.images[dist1[0]][gabor_switch[i]]) , location[0], location[1])
@@ -179,20 +202,21 @@ class attentionExperiment:
             result,response_time = self.userInput(retOrient[target][0].lower())
             trials[i] = [result, response_time, target, retOrient]
             
-            self.userSpace()
-        print trials
+            ret = self.userSpace()
+            if ret == "quit":
+                break
         self.create_log(trials)
         self.log.logMessage("Session end")
         
     
 if __name__ == "__main__":
     # the order is 10 control then interspersed 20 single distractor and 30 double distractor
-    dist = [1]*1 + [2]*1 + [3]*3
+    dist = [1]*300 + [2]*300 + [3]*500
     random.seed()
     random.shuffle(dist)
     target = "red"
     distractors = ("square","size")
-    distOrder = [0]*1 + dist
+    distOrder = [0]*20 + dist
     print distOrder
     attexp = attentionExperiment(distOrder)
     attexp.run(distOrder, target, distractors)
