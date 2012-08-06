@@ -27,7 +27,7 @@ class attentionExperiment:
         self.video.clear("black")
         self.stim = Text("", color="black")
         self.keyboard = KeyTrack("keyboard")
-        self.bc = ButtonChooser(Key("h"), Key("v"), Key("SPACE"))
+        self.bc = ButtonChooser(Key("h"), Key("v"), Key("SPACE"), Key("q"))
         self.images = Images()
         self.images.setup()
         self.generate_sequences(12, len(distOrder))
@@ -60,7 +60,7 @@ class attentionExperiment:
         response_time = rt[0]-ts[0]
         if b==Key("SPACE"):
             return True
-        elif b==key("q"):
+        if b==Key("q"):
             return "quit"
         return False
 
