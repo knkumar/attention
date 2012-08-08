@@ -21,7 +21,7 @@ among smaller circles.
 
 Your task is to look inside the designated object and find the lines
 that go either horizontally or vertically. If the lines go vertically,
-press the "v" key. If the lines go horizontally press the "h" key. You
+press the "l" key. If the lines go horizontally press the "a" key. You
 are supposed to respond as fast and accurately as possible. If you
 make a mistake about the orientation you will hear a 'buzzer' warning
 you that you made an error. At the end of the session you will be told

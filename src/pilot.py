@@ -8,14 +8,12 @@ import pygame
 import ImageEnhance as Enhance
 import ImageChops as ic
 import ImageDraw
-from drawRectangle import drawRectangle as rectangle
-from drawCircle import drawCircle as circle
 from gabor import make_gabor as gabor
 from Images import Images
 #import wave
 #import pyaudio
 import sys
-
+from config import *
 
 class attentionExperiment:
 
@@ -27,10 +25,10 @@ class attentionExperiment:
         self.video.clear("black")
         self.stim = Text("", color="black")
         self.keyboard = KeyTrack("keyboard")
-        self.bc = ButtonChooser(Key("h"), Key("v"), Key("SPACE"), Key("q"))
+        self.bc = ButtonChooser(Key("a"), Key("l"), Key("SPACE"), Key("q"))
         self.images = Images()
         self.images.setup()
-        self.generate_sequences(12, len(distOrder))
+        #self.generate_sequences(12, len(distOrder))
         self.log = LogTrack("session")
 
     def __del__(self):
@@ -81,21 +79,14 @@ class attentionExperiment:
 
     def baitAndSwitch(self, target, dist_1, dist_2):
         random.seed()
-        if not dist_1 and not dist_2:
-            return target, dist_1, dist_2
-
+        position = range(12)
+        target.append( random.sample(position,1)[0])
+        position.remove(target[1])
         if dist_1:
-            dist1 = dist_1[1]
-            if target[1] == dist1:
-                dist_1[1] = (dist1 + random.sample(range(11),1)[0] ) % 12
-
+            dist_1.append( random.sample(position,1)[0] )
+            position.remove(dist_1[1])
         if dist_2:
-            dist2 = dist_2[1]
-            if target[1] == dist2:
-                dist_2[1] = (dist2 + random.sample(range(11),1)[0] ) % 12
-            if dist_1 and dist1 == dist2:
-                dist_2[1] = (dist2 + random.sample(range(11),1)[0] ) % 12
-
+            dist_2.append( random.sample(position,1)[0] )
         return target, dist_1, dist_2
 
     """
@@ -122,40 +113,40 @@ class attentionExperiment:
    
         gabor_switch = [0]*6+[1]*6 #determine whether to keep it horizontal or vertical for the 12 cases
         random.shuffle(gabor_switch)
-        ret = {}
+        ret = {"red":None, "square":None, "size":None}
 
         target, dist1, dist2 = self.baitAndSwitch(target, dist1, dist2)
 
         for i,location in enumerate(pos):
             if i == target[1]:
                 self.video.showProportional( Image(self.images.images[target[0]][gabor_switch[i]]) , location[0], location[1])
-                ret["red"] = ("h" if gabor_switch[i] else "v", i)
+                ret["red"] = ("a" if gabor_switch[i] else "l", i)
             elif dist1 and i == dist1[1]:
                 self.video.showProportional(Image( self.images.images[dist1[0]][gabor_switch[i]]) , location[0], location[1])
-                ret["square"] = ("h" if gabor_switch[i] else "v", i)
+                ret["square"] = ("a" if gabor_switch[i] else "l", i)
             elif dist2 and i == dist2[1]:
                 self.video.showProportional(Image( self.images.images[dist2[0]][gabor_switch[i]]) , location[0], location[1])
-                ret["size"] = ("h" if gabor_switch[i] else "v", i)
+                ret["size"] = ("a" if gabor_switch[i] else "l", i)
             else:
                 self.video.showProportional(Image( self.images.images["green"][gabor_switch[i]]) , location[0], location[1])
 
         self.video.updateScreen()       
         return ret
 
-    def randomize(self, sequence):
+    """def randomize(self, sequence):
         random.seed()
         random.shuffle(sequence)
         return sequence
 
 
-    def generate_sequences(self,num, distLength):
+        def generate_sequences(self,num, distLength):
         random.seed()
         sequence = [val%num for val in  random.sample(range(distLength), distLength) ]
         dist1_sequence = [val%num for val in  random.sample(range(distLength), distLength) ]
         dist2_sequence = [val%num for val in  random.sample(range(distLength), distLength) ]
         self.sequence = self.randomize(sequence)
         self.dist1_sequence = self.randomize(dist1_sequence)
-        self.dist2_sequence = self.randomize(dist2_sequence)
+        self.dist2_sequence = self.randomize(dist2_sequence)"""
 
     def instruct_text(self, target):
         if target == "red":
@@ -175,7 +166,10 @@ class attentionExperiment:
             target = "%s"%v[2]
             pos = ""
             for key,value in v[3].items():
-                pos = pos+"%s=%s|%s"%(key,value[0],value[1])+","
+                if value:
+                    pos = pos+"%s=%s|%s"%(key,value[0],value[1])+","
+                else:
+                    pos = pos+","
             self.log.logMessage("%s,%s,%s,%s,%s"%(trial,result,response_time,target,pos))
 
     def run(self,distOrder, target, distractors):
@@ -189,16 +183,16 @@ class attentionExperiment:
         for i in range(len(distOrder)):
             if distOrder[i] == 0:
                 #target only
-                retOrient = self.drawCanvas([target,self.sequence[i]])
+                retOrient = self.drawCanvas([target])
             if distOrder[i] == 1:
                 #target + first distractor
-                retOrient = self.drawCanvas([target,self.sequence[i]], [distractors[0],self.dist1_sequence[i]] )
+                retOrient = self.drawCanvas([target], [distractors[0]] )
             if distOrder[i] == 2:
                 #target + second distractor
-                retOrient = self.drawCanvas([target,self.sequence[i]], None, [distractors[1],self.dist1_sequence[i]] )
+                retOrient = self.drawCanvas([target], None, [distractors[1]] )
             if distOrder[i] == 3:
                 #target + both distractor
-                retOrient = self.drawCanvas([target,self.sequence[i]], [distractors[0],self.dist1_sequence[i]], [distractors[1],self.dist2_sequence[i]] )
+                retOrient = self.drawCanvas([target], [distractors[0]], [distractors[1]] )
 
             result,response_time = self.userInput(retOrient[target][0].lower())
             trials[i] = [result, response_time, target, retOrient]
@@ -212,12 +206,10 @@ class attentionExperiment:
     
 if __name__ == "__main__":
     # the order is 10 control then interspersed 20 single distractor and 30 double distractor
-    dist = [1]*3 + [2]*3 + [3]*5
+    dist = [1]*200 + [2]*200 + [3]*400
     random.seed()
     random.shuffle(dist)
-    target = "red"
-    distractors = ("square","size")
-    distOrder = [0]*2 + dist
+    distOrder = [0]*20 + dist
     print distOrder
     attexp = attentionExperiment(distOrder)
-    attexp.run(distOrder, target, distractors)
+    attexp.run(distOrder, TARGET, ITEMS)

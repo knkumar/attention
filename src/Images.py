@@ -38,8 +38,8 @@ class Images:
         self.images["square"]  = [self.convertPIL(im_hor), self.convertPIL(im_ver)]
 
         self.createGabor((100,100))
-        im_hors = Enhance.Contrast( circle(self.gabor_horizontal,"green", 100) ).enhance(0.7)
-        im_vers = Enhance.Contrast( circle(self.gabor_vertical,"green", 100) ).enhance(0.7)
+        im_hors = Enhance.Contrast( circle(self.gabor_horizontal,"green") ).enhance(0.7).resize((100,100),img.ANTIALIAS)
+        im_vers = Enhance.Contrast( circle(self.gabor_vertical,"green") ).enhance(0.7).resize((100,100),img.ANTIALIAS)
         self.images["size"]  = [self.convertPIL(im_hors), self.convertPIL(im_vers)]
         
 # overlay the circle with the gabor patch
