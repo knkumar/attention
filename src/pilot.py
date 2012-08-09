@@ -55,12 +55,12 @@ class attentionExperiment:
 
     def userSpace(self):
         ts, b, rt = self.stim.present(clk=self.pc,duration=0,bc=self.bc)
-        response_time = rt[0]-ts[0]
         if b==Key("SPACE"):
             return True
-        if b==Key("q"):
+        elif b==Key("q"):
             return "quit"
-        return False
+        else:
+            return self.userSpace()
 
     def userInput(self, orientation=None ):
         ts, b, rt = self.stim.present(clk=self.pc,duration=0,bc=self.bc)
@@ -120,13 +120,13 @@ class attentionExperiment:
         for i,location in enumerate(pos):
             if i == target[1]:
                 self.video.showProportional( Image(self.images.images[target[0]][gabor_switch[i]]) , location[0], location[1])
-                ret["red"] = ("a" if gabor_switch[i] else "l", i)
+                ret[target[0]] = ("a" if gabor_switch[i] else "l", i)
             elif dist1 and i == dist1[1]:
                 self.video.showProportional(Image( self.images.images[dist1[0]][gabor_switch[i]]) , location[0], location[1])
-                ret["square"] = ("a" if gabor_switch[i] else "l", i)
+                ret[dist1[1]] = ("a" if gabor_switch[i] else "l", i)
             elif dist2 and i == dist2[1]:
                 self.video.showProportional(Image( self.images.images[dist2[0]][gabor_switch[i]]) , location[0], location[1])
-                ret["size"] = ("a" if gabor_switch[i] else "l", i)
+                ret[dist2[1]] = ("a" if gabor_switch[i] else "l", i)
             else:
                 self.video.showProportional(Image( self.images.images["green"][gabor_switch[i]]) , location[0], location[1])
 
@@ -157,20 +157,21 @@ class attentionExperiment:
             return "large green circle"
 
     def create_log(self, trials):
-        self.log.logMessage("Trial# \t result \t response_time \t target"+ 
-                            "\t red orient|red position \t size orient|size position \t square orient|square position")
+        self.log.logMessage("Trial# \t result \t response_time \t target \t square \t red \t size \t #Dist")
         for k,v in trials.items():
             trial = "%s"%k
             result = "correct" if v[0] else "Incorrect"
             response_time = "%s"%v[1]
             target = "%s"%v[2]
             pos = ""
+            count=0
             for key,value in v[3].items():
                 if value:
                     pos = pos+"%s=%s|%s"%(key,value[0],value[1])+","
+                    count=count+1
                 else:
                     pos = pos+","
-            self.log.logMessage("%s,%s,%s,%s,%s"%(trial,result,response_time,target,pos))
+            self.log.logMessage("%s,%s,%s,%s,%s,%s"%(trial,result,response_time,target,pos,count-1))
 
     def run(self,distOrder, target, distractors):
 
@@ -203,13 +204,15 @@ class attentionExperiment:
         self.create_log(trials)
         self.log.logMessage("Session end")
         
+def doRun(distOrder):
+    attexp = attentionExperiment(distOrder)
+    attexp.run(distOrder, TARGET, ITEMS)
+
     
 if __name__ == "__main__":
     # the order is 10 control then interspersed 20 single distractor and 30 double distractor
-    dist = [1]*200 + [2]*200 + [3]*400
+    dist = [1]*250 + [2]*250 + [3]*750
     random.seed()
     random.shuffle(dist)
-    distOrder = [0]*20 + dist
-    print distOrder
-    attexp = attentionExperiment(distOrder)
-    attexp.run(distOrder, TARGET, ITEMS)
+    distOrder = [0]*250 + dist
+    doRun(distOrder)

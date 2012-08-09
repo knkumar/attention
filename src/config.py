@@ -1,2 +1,2 @@
-TARGET = "red"
-ITEMS = ["square", "size"]
+TARGET = "square"
+ITEMS = ["red", "size"]
