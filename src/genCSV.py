@@ -11,7 +11,7 @@ def gen_csv(fname):
     for line in session.readlines():
         main = line.split('\t')[2]
         if ',' in main:
-            csv.write(main[:-2]+"\n")
+            csv.write(main[:]+"\n")
     session.close()
     csv.close()
 

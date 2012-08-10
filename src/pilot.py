@@ -123,10 +123,10 @@ class attentionExperiment:
                 ret[target[0]] = ("a" if gabor_switch[i] else "l", i)
             elif dist1 and i == dist1[1]:
                 self.video.showProportional(Image( self.images.images[dist1[0]][gabor_switch[i]]) , location[0], location[1])
-                ret[dist1[1]] = ("a" if gabor_switch[i] else "l", i)
+                ret[dist1[0]] = ("a" if gabor_switch[i] else "l", i)
             elif dist2 and i == dist2[1]:
                 self.video.showProportional(Image( self.images.images[dist2[0]][gabor_switch[i]]) , location[0], location[1])
-                ret[dist2[1]] = ("a" if gabor_switch[i] else "l", i)
+                ret[dist2[0]] = ("a" if gabor_switch[i] else "l", i)
             else:
                 self.video.showProportional(Image( self.images.images["green"][gabor_switch[i]]) , location[0], location[1])
 
@@ -211,8 +211,8 @@ def doRun(distOrder):
     
 if __name__ == "__main__":
     # the order is 10 control then interspersed 20 single distractor and 30 double distractor
-    dist = [1]*250 + [2]*250 + [3]*750
+    dist = [0]*230 + [1]*250 + [2]*250 + [3]*750
     random.seed()
     random.shuffle(dist)
-    distOrder = [0]*250 + dist
+    distOrder = [0]*20 + dist
     doRun(distOrder)
