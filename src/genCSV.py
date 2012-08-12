@@ -6,7 +6,7 @@ def gen_csv(fname):
     session = open("data/"+fname+"/session.log", "rb")
     csv = open("results/"+fname+".csv", "wb")
     # the format for the file
-    header = "TrialNum,Response,ResponseTime,Target,Item1,Item2,Item3\n"
+    header = "TrialNum,Response,ResponseTime,Target,Item1,Item2,Item3,NumDist\n"
     csv.write(header)
     for line in session.readlines():
         main = line.split('\t')[2]
