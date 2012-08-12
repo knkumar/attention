@@ -65,6 +65,7 @@ class attentionExperiment:
     def userInput(self, orientation=None ):
         ts, b, rt = self.stim.present(clk=self.pc,duration=0,bc=self.bc)
         response_time = rt[0]-ts[0]
+        self.video.clear("black")
         if b==Key(orientation):
             self.video.showCentered(Text("Correct.\nPress space for next"))    
             result = True #correct
@@ -105,9 +106,11 @@ class attentionExperiment:
     def drawCanvas(self, target, dist1=None, dist2=None):
         # reset the display to black
         self.video.clear("black")
-        self.video.showCentered(Text("+",size=0.2))
-        flashStimulus(Text("+",size=0.2), 1000, clk=self.pc)
+        self.video.showCentered(Text("+"))
+        #self.pc.delay(5000)
+        flashStimulus(Text("+",size=0.01), 1500, clk=self.pc)
         self.video.clear("black")
+        self.video.showCentered(Text("+"))            
         pos = [[0.8,0.5], [0.76,0.65] , [0.65,0.76] , [0.5,0.8] , [0.35,0.76] , [0.24,0.65] ,
                [0.2,0.5], [0.24,0.35] , [0.35,0.24] , [0.5,0.2] , [0.65,0.24] , [0.76,0.35]]
    
