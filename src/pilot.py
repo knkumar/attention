@@ -50,13 +50,23 @@ class attentionExperiment:
         random.seed()
         position = range(12)
         if target:
-            target.append( random.sample(position,1)[0])
+            if len(target) == 1:
+                target.append(random.sample(position,1)[0])
+            else:
+                target[1] = random.sample(position,1)[0]
             position.remove(target[1])
         if dist_1:
-            dist_1.append( random.sample(position,1)[0] )
+            if len(dist_1) == 1:
+                dist_1.append(random.sample(position,1)[0])
+            else:
+                dist_1[1] = random.sample(position,1)[0]
             position.remove(dist_1[1])
         if dist_2:
-            dist_2.append( random.sample(position,1)[0] )
+            if len(dist_2) == 1:
+                dist_2.append( random.sample(position,1)[0] )
+            else:
+                dist_2[1] = random.sample(position,1)[0]
+            position.remove(dist_2[1])
         return target, dist_1, dist_2
 
     """
@@ -145,7 +155,7 @@ class attentionExperiment:
         paramsDict = {0: {"target":[target], "dist1":None, "dist2":None},
                       1: {"target":[target], "dist1":[distractors[0]], "dist2":None},
                       2: {"target":[target], "dist1":[distractors[1]], "dist2":None},
-                      3: {"target":[target], "dist1":[distractors[0]], "dist2":[distractors[0]]},
+                      3: {"target":[target], "dist1":[distractors[0]], "dist2":[distractors[1]]},
                       4: {"target":[None], "dist1":None, "dist2":None},
                       5: {"target":[None], "dist1":[distractors[0]], "dist2":None},
                       6: {"target":[None], "dist1":[distractors[1]], "dist2":None},
@@ -183,7 +193,7 @@ if __name__ == "__main__":
         dist = [0]*115 + [1]*125 + [2]*125 + [3]*375 + [4]*115 + [5]*125 + [6]*125 + [7]*375
         random.seed()
         random.shuffle(dist)
-        distStart = dist[0]*10 + dist[4]*10
+        distStart = [0]*10 + [4]*10
         random.shuffle(distStart)
         distOrder = distStart + dist
     doRun(distOrder)
